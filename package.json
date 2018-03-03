@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "webpack": "webpack",
-    "server": "webpack-dev-server --host 0.0.0.0 --https --port 443"
+    "server": "webpack-dev-server --host 0.0.0.0 --https --port 443",
+    "start": "npm run webpack && npm run server"
   },
   "repository": {
     "type": "git",

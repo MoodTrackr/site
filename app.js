@@ -1,9 +1,23 @@
+var React = require('react');
+var ReactDOM = require('react-dom');
 import {post} from 'axios';
 
 var video;
-var img = new Image();
+var img = new Image(48, 48);
 var canvas;
 
+// REACTDOM THINGS
+class App extends React.Component {
+    render() {
+        return (
+            <div>Hello World!</div>
+        );
+    }
+};
+
+ReactDOM.render(<App/>, document.getElementById('app'));
+
+// TRACKER THINGS
 window.onload = function() {
     const constraints = {
         video: { width: 48, height: 48 }
@@ -11,6 +25,8 @@ window.onload = function() {
 
     video = document.querySelector('video');
     canvas = document.createElement('canvas');
+    canvas.width = 48;
+    canvas.height = 48;
     navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
 }
 
@@ -25,7 +41,27 @@ function handleError(error) {
 
 function sendSnapshot() {
     canvas.getContext('2d').drawImage(video, 0, 0);
-    img.src = canvas.toDataURL('image/webp');
-    // post('http://localhost:3030', img, {headers: { 'content-type': 'image/webp' }});
-    console.log(img);
+    img.src = canvas.toDataURL('image/webp;base64');
+    img.src = grayscale();
+    // post('https://localhost:8080', img, {headers: { 'content-type': 'image/webp;base64' }});
+    console.log({
+        image: canvas.toDataURL()
+    })
+    document.body.appendChild(img);
+}
+
+function grayscale() {
+    var ctx = canvas.getContext('2d');
+    var imgPixels = ctx.getImageData(0, 0, 48, 48);
+    for(var y = 0; y < imgPixels.height; y++){
+        for(var x = 0; x < imgPixels.width; x++){
+            var i = (y * 4) * imgPixels.width + x * 4;
+            var avg = (imgPixels.data[i] + imgPixels.data[i + 1] + imgPixels.data[i + 2]) / 3;
+            imgPixels.data[i] = avg;
+            imgPixels.data[i + 1] = avg;
+            imgPixels.data[i + 2] = avg;
+        }
+    }
+    ctx.putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
+    return canvas.toDataURL();
 }
