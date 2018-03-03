@@ -1,0 +1,35 @@
+{
+  "name": "site",
+  "version": "1.0.0",
+  "description": "Front-end for Hacklahoma project",
+  "main": "app.js",
+  "scripts": {
+    "webpack": "webpack",
+    "server": "webpack-dev-server --host 0.0.0.0 --https --port 443",
+    "start": "npm run webpack && npm run server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheManipulators/site.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheManipulators/site/issues"
+  },
+  "homepage": "https://github.com/TheManipulators/site#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.3",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "webpack": "^4.0.1",
+    "webpack-dev-server": "^3.1.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^2.0.10"
+  }
+}
