@@ -1,7 +1,7 @@
-var axios = require('axios');
+import {post} from 'axios';
 
 var video;
-var img;
+var img = new Image();
 var canvas;
 
 window.onload = function() {
@@ -10,7 +10,6 @@ window.onload = function() {
     };
 
     video = document.querySelector('video');
-    img = document.querySelector('img');
     canvas = document.createElement('canvas');
     navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
 }
@@ -27,4 +26,5 @@ function handleError(error) {
 function sendSnapshot() {
     canvas.getContext('2d').drawImage(video, 0, 0);
     img.src = canvas.toDataURL('image/webp');
+    post('http://localhost:3030', img, {headers: { 'content-type': 'image/webp' }});
 }
