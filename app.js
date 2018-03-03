@@ -26,5 +26,6 @@ function handleError(error) {
 function sendSnapshot() {
     canvas.getContext('2d').drawImage(video, 0, 0);
     img.src = canvas.toDataURL('image/webp');
-    post('http://localhost:3030', img, {headers: { 'content-type': 'image/webp' }});
+    // post('http://localhost:3030', img, {headers: { 'content-type': 'image/webp' }});
+    console.log(img);
 }

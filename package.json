@@ -4,7 +4,8 @@
   "description": "Front-end for Hacklahoma project",
   "main": "app.js",
   "scripts": {
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "server": "webpack-dev-server --host 0.0.0.0 --https --port 443"
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,8 @@
     "babel-preset-react": "^6.24.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "webpack": "^4.0.1"
+    "webpack": "^4.0.1",
+    "webpack-dev-server": "^3.1.0"
   },
   "devDependencies": {
     "webpack-cli": "^2.0.10"
