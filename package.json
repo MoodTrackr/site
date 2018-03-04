@@ -29,6 +29,7 @@
     "babel-preset-react": "^6.24.1",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
+    "lodash": "^4.17.5",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-svg-piechart": "^2.0.3",

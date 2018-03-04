@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {post} from 'axios';
 import PieChart from 'react-svg-piechart';
+import _ from 'lodash';
 
 let timer, timer2;
 
@@ -11,6 +12,7 @@ export default class Dashboard extends Component {
         this.handleStopTrack = this.handleStopTrack.bind(this);
         this.generatePieChart = this.generatePieChart.bind(this);
         this.getEmotionInterval = this.getEmotionInterval.bind(this);
+        this.getMostFrequentEmotion = this.getMostFrequentEmotion.bind(this);
         this.state = {
             stage: '',
             currentMood: '',
@@ -38,8 +40,17 @@ export default class Dashboard extends Component {
             headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
             timeout: 20000
         }).then((result) => {
+            console.log(result);
             this.setState({angry: result.data["Angry"], disgust: result.data["Disgust"], fear: result.data["Fear"], happy: result.data["Happy"], neutral: result.data["Neutral"], sad: result.data["Sad"], surprise: result.data["Surprise"]})
         }).catch(error => {console.log(error)});
+    }
+
+    getMostFrequentEmotion() {
+        return _.maxBy(_.keys(
+            {'Angry': this.state.angry, 'Disgust': this.state.disgust, 'Fear': this.state.fear,
+            'Happy': this.state.happy, 'Neutral': this.state.neutral, 'Sad': this.state.sad,
+            'Surprise': this.state.surprise}
+        ), function (o) { return obj[o]; });
     }
 
     handleStartTrack() {
@@ -101,7 +112,7 @@ export default class Dashboard extends Component {
         }
         else if(this.state.stage == 'tracking') {
             dash = <div style={{textAlign: "center"}}>
-                <h4 style={{fontWeight: "bold"}}>We think you're feeling {this.state.currentMood} right now.</h4>
+                <h4 style={{fontWeight: "bold"}}>We think you're feeling {this.props.current} right now.</h4>
                 <h1 style={{fontSize: "300%", textTransform: 'lowercase'}} id="timecode">{this.state.elapsed}</h1>
                 <div className="container-fluid row" style={{marginTop: 20}}>
                     <div className="col-sm-2"></div>
@@ -119,7 +130,7 @@ export default class Dashboard extends Component {
         }
         else if(this.state.stage == 'report') {
             dash = <div style={{textAlign: "center"}}>
-                <h4 style={{fontWeight: "bold"}}>Over <span style={{textTransform: "none"}}>{this.state.elapsed}</span>, you mostly felt {this.state.currentMood}.</h4>
+                <h4 style={{fontWeight: "bold"}}>Over <span style={{textTransform: "none"}}>{this.state.elapsed}</span>, you mostly felt {this.getMostFrequentEmotion}.</h4>
                 <div className="container-fluid row">
                     <div className="col-sm-4"></div>
                     <div className="col-sm-4"></div>
