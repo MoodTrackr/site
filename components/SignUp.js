@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {post} from 'axios';
 
 let usernameField, passwordField1, passwordField2;
 
@@ -21,6 +22,16 @@ export default class Signup extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        if(passwordField1.value == passwordField2.value) {
+            post("https://18.219.163.179:8080/register", {
+                username: usernameField.value,
+                password: passwordField1.value
+            }, {
+                headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
+            }).then((result) => {
+                console.log(result);
+            });
+        }
     }
 
     render() {

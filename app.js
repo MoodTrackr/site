@@ -29,8 +29,8 @@ class App extends React.Component {
             this.toggleModule('login');
         }
         else {
-            this.setState({hasAuth: true})
             this.toggleModule('dash');
+            this.setState({hasAuth: true})
         }
     }
 
@@ -68,7 +68,7 @@ class App extends React.Component {
     authenticate(cookie, name) {
         makeCookie('auth', cookie);
         makeCookie('username', name)
-        this.setState({hasAuth: true})
+        this.setState({hasAuth: true, module: 'dash'})
     }
 };
 
@@ -89,7 +89,7 @@ window.onload = function() {
 // IF WE HAVE WEBCAM PERMISSIONS, KICK OFF TRACKING
 function handleSuccess(stream) {
     video.srcObject = stream;
-    camInterval = setInterval(sendSnapshot, 1000);
+    camInterval = setInterval(sendSnapshot, 3000);
 }
 
 // LOG PERMISSIONS ERROR
