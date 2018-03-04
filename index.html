@@ -30,6 +30,17 @@
                 rmCookie('auth');
                 window.location.href = "./blah.html";
             }
+
+            function showLogout() {
+                document.getElementById('lo').style.display = "inline";
+            }
+
+            if(readCookie('auth') == null) {
+                document.getElementById('lo').style.display = "none";
+            }
+            else {
+                showLogout();
+            }
         </script>
     </body>
 </html>

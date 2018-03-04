@@ -35,6 +35,7 @@ export default class Login extends Component {
         }, {
             headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
         }).then((result) => {
+            showLogout();
             this.props.authenticate(result.data.cookie, usernameField.value);
         });
    }
