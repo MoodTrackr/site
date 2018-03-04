@@ -3,6 +3,7 @@ var ReactDOM = require('react-dom');
 import {post} from 'axios';
 import Login from './components/LogIn';
 import Signup from './components/SignUp';
+import Dashboard from './components/Dashboard';
 
 var video;
 var img = new Image(48, 48);
@@ -22,6 +23,9 @@ class App extends React.Component {
         if(readCookie('auth') == null) {
             this.toggleModule('login');
         }
+        else {
+            this.toggleModule('dash');
+        }
     }
 
     render() {
@@ -32,6 +36,9 @@ class App extends React.Component {
         }
         else if(this.state.module == 'signup') {
             mod = <Signup toggle={this.toggleModule}/>;
+        }
+        else if(this.state.module == 'dash') {
+            mod = <Dashboard/>;
         }
 
         return mod;
@@ -51,6 +58,9 @@ window.onload = function() {
     const constraints = {
         video: { width: 48, height: 48 }
     };
+
+    makeCookie('auth', '123');
+    makeCookie('username', 'Ben');
 
     video = document.querySelector('video');
     canvas = document.createElement('canvas');
