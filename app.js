@@ -24,11 +24,13 @@ class App extends React.Component {
         this.handleError = this.handleError.bind(this);
         this.sendSnapshot = this.sendSnapshot.bind(this);
         this.grayscale = this.grayscale.bind(this);
+        this.promptLogin = this.promptLogin.bind(this);
 
         this.state = {
             module: '',
             hasAuth: false,
-            currentEmotion: 'Neutral'
+            currentEmotion: 'Neutral',
+            newName: ''
         }
     }
 
@@ -46,10 +48,10 @@ class App extends React.Component {
         let mod = <div></div>;
 
         if(this.state.module == 'login') {
-            mod = <Login toggle={this.toggleModule} authenticate={this.authenticate}/>;
+            mod = <Login toggle={this.toggleModule} authenticate={this.authenticate} name={this.state.newName}/>;
         }
         else if(this.state.module == 'signup') {
-            mod = <Signup toggle={this.toggleModule}/>;
+            mod = <Signup toggle={this.toggleModule} redirect={this.promptLogin}/>;
         }
         else if(this.state.module == 'dash' || this.state.hasAuth) {
             mod = <Dashboard start={this.startFilming} stop={this.stopFilming} current={this.state.currentEmotion} toggle={this.toggleModule}/>;
@@ -132,6 +134,10 @@ class App extends React.Component {
         }
         ctx.putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
         return canvas.toDataURL();
+    }
+
+    promptLogin(username) {
+        this.setState({module: 'login', newName: username})
     }
 };
 

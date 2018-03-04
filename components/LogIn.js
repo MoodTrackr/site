@@ -47,7 +47,7 @@ export default class Login extends Component {
                     <fieldset>
                         <div className="form-group row" style={{textAlign: "center"}}>
                             <div className="col-sm-2"></div>
-                            <label for="username" className="col-sm-2 col-form-label">Username</label>
+                            <label for="username" className="col-sm-2 col-form-label" value={this.props.name}>Username</label>
                             <div className="col-sm-6"><input type="text" className="form-control" id="username"/></div>
                             <div className="col-sm-2"></div>
                         </div>

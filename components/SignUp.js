@@ -20,6 +20,12 @@ export default class Signup extends Component {
         this.props.toggle('login');
     }
 
+    redirectEverSignUp() {
+        this.saveState({user: usernameField.value});
+        this.props.toggle('login');
+        document.getElementById('username').value = this.state.user;
+    }
+
     handleSubmit(event) {
         event.preventDefault();
         if(passwordField1.value == passwordField2.value) {
@@ -29,7 +35,7 @@ export default class Signup extends Component {
             }, {
                 headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
             }).then((result) => {
-                console.log(result);
+                this.props.redirect(usernameField.value);
             });
         }
     }
