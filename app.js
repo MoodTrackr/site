@@ -89,7 +89,7 @@ class App extends React.Component {
     handleSuccess(stream) {
         video.srcObject = stream;
         videoStream = stream;
-        camInterval = setInterval(this.sendSnapshot, 3000);
+        camInterval = setInterval(this.sendSnapshot, 5000);
     }
 
     // LOG PERMISSIONS ERROR
