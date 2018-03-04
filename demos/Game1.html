@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    body { background-color: black; }
+    h1 { color: #FFFFFF; }
+    </style>
+    <title>Game</title>
+</head>
+
+<body>
+    <center>
+        <h1>Game</h1>
+        <canvas id="myCanvas" width="1600" height="600"></canvas>
+    </center>
+
+    <img id="Jeff" style="display:none;" src="jeff.png"></img>
+    <img id="Background" style="display:none;" src="background.jpg"></img>
+    <img id="Trex" style="display:none;" src="trex.png"></img>
+    <img id="Pt" style="display:none;" src="pt.png"></img>
+
+    <script>
+    	var canvas;
+    	var drawing;
+    	var gameState;
+    	var randomNum;
+    	var stallValue;
+    	var direction = "down";
+    	var isPressing = false;
+    	var numEnemies = 5;
+
+        var drawGame = function() {
+        	var w = canvas.width;
+    		var h = canvas.height;
+
+    		drawing.fillStyle = "#000000";
+    		drawing.fillRect(0,0,w,h);
+ 
+        	drawSprite(gameState.background);
+        	drawSprite(gameState.jeff);
+        	drawSprite(gameState.trex);
+
+        	for(var i = 0; i < numEnemies; i++) {
+	        	drawSprite(gameState.enemies[i]);
+     		}
+        }
+
+        var animateGame = function()
+	    {
+	        window.requestAnimationFrame(animateGame);
+
+	       	var jeff = gameState.jeff;
+	       	var background = gameState.background;
+	       	var enemies = gameState.enemies;
+
+	       	for(var i = 0; i < numEnemies; i++) {
+	       		enemies[i].x += enemies[i].vx;
+	       	}
+	       	if(!isPressing) {
+	       		jeff.y += jeff.vy;
+	       	}
+
+	        background.x += background.vx;
+
+	        while (jeff.y <= -20) {
+	        	jeff.y += 1.0;
+	        }
+
+	        if(background.x < -background.image.width) {
+	        	background.x = 0;
+	        }
+
+	        drawGame();
+	    }
+
+	    var createSprite = function(imageName, x, y, vx, vy)
+    	{
+	        var sprite = {};
+	        sprite.image = document.getElementById(imageName);
+	        sprite.x = x;
+	        sprite.y = y;
+	        sprite.w = sprite.image.width;
+	        sprite.h = sprite.image.height;
+	        sprite.vx = vx;
+	        sprite.vy = vy;
+	        return sprite;
+   		}
+
+   		var drawSprite = function(sprite)
+	    {
+	        drawing.drawImage(sprite.image, sprite.x, sprite.y, sprite.w, sprite.h);
+	    }
+
+	    var onKeyPressed = function(event)
+	    {
+	        if(event.charCode == 32) {
+	        	isPressing = true;
+	        	//direciton = "up";
+	        	jump();
+	        }
+	    }
+
+	    var onKeyUp = function(event)
+	    {
+	    	isPressing = false;
+
+	    	if(event.charCode == 32) {
+	    		//direction = "down";
+	        	jump();
+	        }
+
+	        stallValue = gameState.jeff.vy;
+	    }
+
+	    function jump()
+	    {
+	    	var jeff = gameState.jeff;
+	    	
+			//if(direction == "up") {
+		    	if(stallValue > -gameState.jeff.vy) {
+		    		stallValue -= 0.1;
+		    		jeff.y += stallValue;
+		    	}
+		    	else {
+		    		jeff.y -= jeff.vy;
+		    	}
+		    //}
+
+		   /* else if(direction == "down") {
+		    	console.log("Down");
+		    	while(true) {
+			    	if(stallValue < gameState.jeff.vy) {
+			    		stallValue += 0.1;
+			    		jeff.y += stallValue;
+			    	}
+			    	else {
+			    		jeff.y += jeff.vy;
+			    		break;
+			    	}
+			    }
+		    }*/
+	    }
+
+	    window.onload = function() 
+	    {
+	        canvas = document.getElementById("myCanvas");
+	        drawing = canvas.getContext("2d");
+
+	        gameState = {};
+	        gameState.jeff = createSprite("Jeff", 300, 200, 0.0, 3.0);
+	        gameState.background = createSprite("Background", 0, 0, -1.0, 0.0);
+	        gameState.trex = createSprite("Trex", canvas.width, canvas.height - 370, -4.0, 0.0);
+
+	        gameState.enemies = [];
+	        stallValue = gameState.jeff.vy;
+
+	        randomNum = Math.floor(Math.random() * numEnemies);
+
+	        for (var i=0; i< numEnemies; i++)
+		    {
+		    	randomNum = 0.0;
+		    	while(randomNum < 0.25) {
+		    		randomNum = Math.random();
+		    	}
+		    	if(randomNum < 0.60) {
+		        	var enemy = createSprite("Trex", 5000, canvas.height - 370, -12.0 * randomNum, 0.0);
+		        }
+		        else {
+		        	var enemy = createSprite("Pt", 5000, 300 * randomNum * randomNum, -15.0 * randomNum * randomNum, 0.0);
+		        }
+		        gameState.enemies.push(enemy);
+		    }
+
+	        // window.addEventListener("keydown", onKeyDown);
+	        window.addEventListener("keypress", onKeyPressed);
+	        window.addEventListener("keyup", onKeyUp);
+
+	        animateGame();
+	    }
+    </script> 
+</body>
+</html>
