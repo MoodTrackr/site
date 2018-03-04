@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
+import {post} from 'axios';
 import PieChart from 'react-svg-piechart';
 
-let timer;
+let timer, timer2;
 
 export default class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.handleStartTrack = this.handleStartTrack.bind(this);
         this.handleStopTrack = this.handleStopTrack.bind(this);
+        this.getEmotionInterval = this.getEmotionInterval.bind(this);
         this.state = {
             stage: '',
             currentMood: '',
@@ -17,6 +19,18 @@ export default class Dashboard extends Component {
 
     componentWillMount() {
         this.setState({stage: 'fresh'});
+    }
+
+    getEmotionInterval() {
+        post("https://18.219.163.179:8080/history", {
+            cookie: readCookie('auth'),
+            starttime: this.state.startTime,
+            endtime: Date.now()
+        }, {
+            headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
+        }).then((result) => {
+            console.log(result);
+        });
     }
 
     handleStartTrack() {
@@ -40,11 +54,16 @@ export default class Dashboard extends Component {
             }
             this.setState({elapsed: fancyTime});
         }, 1000);
+
+        timer2 = setInterval(() => {
+            this.getEmotionInterval();
+        }, 20000);
     }
 
     handleStopTrack() {
         this.props.stop();
         clearInterval(timer);
+        clearInterval(timer2);
         this.setState({stage: 'report'});
     }
 
@@ -83,6 +102,18 @@ export default class Dashboard extends Component {
         else if(this.state.stage == 'report') {
             dash = <div style={{textAlign: "center"}}>
                 <h4 style={{fontWeight: "bold"}}>Over <span style={{textTransform: "none"}}>{this.state.elapsed}</span>, you mostly felt {this.state.currentMood}.</h4>
+                <div className="container-fluid row">
+                    <div className="col-sm-4"></div>
+                    <div className="col-sm-4"></div>
+                        <PieChart data={[
+                            {title: "Data 1", value: 100, color: "#22594e"},
+                            {title: "Data 2", value: 60, color: "#2f7d6d"},
+                            {title: "Data 3", value: 30, color: "#3da18d"},
+                            {title: "Data 4", value: 20, color: "#69c2b0"},
+                            {title: "Data 5", value: 10, color: "#a1d9ce"},
+                        ]} expandOnHover/>
+                    </div>
+                    <div className="col-sm-4"></div>
                 <button className="btn btn-success" onClick={this.handleStartTrack}>Track</button>
             </div>;
         }
