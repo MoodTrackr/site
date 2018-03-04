@@ -8,6 +8,10 @@
     "server": "webpack-dev-server --host 0.0.0.0 --https --port 443",
     "start": "npm run webpack && npm run server"
   },
+  "proxy": {
+    "host": "18.219.163.179",
+    "port": 8080
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TheManipulators/site.git"
