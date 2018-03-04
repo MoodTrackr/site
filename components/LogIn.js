@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import axios, {post} from 'axios';
+// import axios, {post} from 'axios';
+// import tunnel from 'tunnel';
 
 let usernameField, passwordField;
 
@@ -16,20 +17,44 @@ export default class Login extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        const loginRequest = axios({
-            method: 'post',
-            url: '/register',
-            headers: { 'Content-Type': 'application/json' },
-            data: {
-                username: usernameField.value,
-                password: passwordField.value
-            },
-	    proxy: {
-		host: 'http://18.219.163.179',
-		port: 8080
-	    },
-	    baseURL: 'http://18.219.163.179:8080'
-        }).then(result => {console.log(result)}).catch(error => {console.log(error)});
+
+        var tunnelingAgent = tunnel.httpOverHttps({
+            // maxSockets: poolSize, // Defaults to http.Agent.defaultMaxSockets
+
+            proxy: { // Proxy settings
+                // host: proxyHost, // Defaults to 'localhost'
+                port: 8080, // Defaults to 443
+                // localAddress: localAddress, // Local interface if necessary
+
+                // Header fields for proxy server if necessary
+                headers: {
+                  'User-Agent': 'Node'
+                },
+            }
+        });
+
+        // var req = http.request({
+        //     host: '18.219.163.179',
+        //     path: '/login',
+        //     port: 8080,
+        //     agent: tunnelingAgent
+        // }, (res) => {
+        //     res.on('data', (data) => {console.log(data);});
+        // });
+        // const loginRequest = axios({
+        //     method: 'post',
+        //     url: '/login',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     data: {
+        //         username: usernameField.value,
+        //         password: passwordField.value
+        //     },
+	    // proxy: {
+		// host: 'http://18.219.163.179',
+		// port: 8080
+	    // },
+	    // baseURL: 'http://18.219.163.179:8080'
+        // }).then(result => {console.log(result)}).catch(error => {console.log(error)});
 
 	/*axios.post('/login', {
 		username: usernameField.value,
@@ -66,7 +91,8 @@ export default class Login extends Component {
                     </fieldset>
                     <input type="submit" value="Submit" className="btn btn-default"/>
                 </form>
-            </center>]
+            </center>,
+            <span style={{fontSize: "x-small", fontStyle: "italic"}}>Not a user yet? <a href="#" onclick="toggleModule('signup')">Sign up!</a></span>]
         );
     }
 }
