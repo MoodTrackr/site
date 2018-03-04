@@ -2,6 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 import {post} from 'axios';
 import Login from './components/LogIn';
+import Signup from './components/SignUp';
 
 var video;
 var img = new Image(48, 48);
@@ -9,14 +10,39 @@ var canvas;
 
 // REACTDOM THINGS
 class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.toggleModule = this.toggleModule.bind(this);
+        this.state = {
+            module: ''
+        }
+    }
+
+    componentDidMount() {
+        if(readCookie('auth') == null) {
+            this.toggleModule('login');
+        }
+    }
+
     render() {
-        return (
-            <div>Hello World!</div>
-        );
+        let mod = <div></div>;
+
+        if(this.state.module == 'login') {
+            mod = <Login toggle={this.toggleModule}/>;
+        }
+        else if(this.state.module == 'signup') {
+            mod = <Signup toggle={this.toggleModule}/>;
+        }
+
+        return mod;
+    }
+
+    toggleModule(newModule) {
+        this.setState({module: newModule});
     }
 };
 
-ReactDOM.render(<Login/>, document.getElementById('app'));
+ReactDOM.render(<App/>, document.getElementById('app'));
 
 /******************************************************/
 

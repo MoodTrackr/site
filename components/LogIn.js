@@ -8,11 +8,17 @@ export default class Login extends Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.goToSignup = this.goToSignup.bind(this);
     }
 
     componentDidMount() {
         usernameField = document.getElementById('username');
         passwordField = document.getElementById('password');
+    }
+
+    goToSignup() {
+        console.log('signup')
+        this.props.toggle('signup');
     }
 
     handleSubmit(event) {
@@ -92,7 +98,7 @@ export default class Login extends Component {
                     <input type="submit" value="Submit" className="btn btn-default"/>
                 </form>
             </center>,
-            <span style={{fontSize: "x-small", fontStyle: "italic"}}>Not a user yet? <a href="#" onclick="toggleModule('signup')">Sign up!</a></span>]
+            <div style={{textAlign: "center", marginTop: 10}}><span style={{fontStyle: "italic"}}>Not a user yet? <a href="#" onClick={this.goToSignup}>Sign up!</a></span></div>]
         );
     }
 }
