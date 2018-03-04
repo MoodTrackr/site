@@ -34,7 +34,7 @@ export default class Login extends Component {
             password: passwordField.value
         }, {
             headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
-        });
+        }).then((result) => console.log(result));
    }
 
     render() {
