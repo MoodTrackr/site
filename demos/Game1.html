@@ -15,6 +15,7 @@
     </center>
 
     <img id="Jeff" style="display:none;" src="jeff.png"></img>
+    <img id="Crash" style="display:none;" src="explosion.png"></img>
     <img id="Background" style="display:none;" src="background.jpg"></img>
     <img id="Background2" style="display:none;" src="background.jpg"></img>
     <img id="Trex" style="display:none;" src="trex.png"></img>
@@ -26,9 +27,8 @@
     	var gameState;
     	var randomNum;
     	var maxSpeed;
-    	var isStalling = false;
     	var isPressing = false;
-    	var numEnemies = 5;
+    	var numEnemies = 10;
 
         var drawGame = function() {
         	var w = canvas.width;
@@ -59,21 +59,34 @@
 	       	for(var i = 0; i < numEnemies; i++) {
 	       		enemies[i].x += enemies[i].vx;
 	       	}
-	       	if(!isStalling) {
-	       		jeff.y += jeff.vy;
+
+	       	if(isPressing && jeff.vy > -2.0) {
+	       		jeff.vy -= 0.05;
+	       	}
+	       	else if(!isPressing && jeff.vy < 3.0) {
+	       		jeff.vy += 0.05;
 	       	}
 
 	        background.x += background.vx;
 	        background2.x += background2.vx;
 
-	        while (jeff.y <= -20) {
+	        if (jeff.y <= -20) {
 	        	jeff.y += 1.0;
 	        }
+	        if (isColliding()){
+	        	jeff.image = document.getElementById("Crash");
+	        	drawSprite(gameState.jeff);
+
+	        	alert("GAME OVER!");
+	       		document.location.reload();
+	        }
+
+	        jeff.y += jeff.vy;
 
 	        if(background.x < -background.image.width) {
 	        	background.x = background.image.width;
 	        }
-	       if(background2.x < -background2.image.width) {
+	       	if(background2.x < -background2.image.width) {
 	        	background2.x = background2.image.width;
 	        }
 
@@ -98,19 +111,10 @@
 	        drawing.drawImage(sprite.image, sprite.x, sprite.y, sprite.w, sprite.h);
 	    }
 
-	    var onKeyPressed = function(event)
-	    {
-	        if(event.charCode == 32 || event.keyCode == 32) {
-	        	isPressing = true;
-	        }
-	        jump();
-	    }
-
 	    var onKeyUp = function(event)
 	    {
 	    	if(isPressing) {
 	    		isPressing = false;
-	        	jump();
 	        }
 	    }
 
@@ -118,41 +122,23 @@
 	    {
 	    	if(event.charCode == 32 || event.keyCode == 32) {
 	    		isPressing = true;
-	    		console.log("Test");
-	    		for(var i = 0; i < 20; i++) {
-	    			setTimeout(jump(), 60);
+	    	}
+	    	setTimeout(uselessFunction(), 500);
+	    }
+
+	    function isColliding()
+	    {
+	    	var jeff = gameState.jeff;
+	    	var enemies = gameState.enemies;
+
+	    	for(var i = 0; i < enemies.length; i++) {
+	    		if(((jeff.x + jeff.w - 50 >= enemies[i].x && jeff.x <= enemies[i].x + enemies[i].w)  && ((jeff.y + jeff.h - 100 >= enemies[i].y) || (jeff.y >= enemies[i].y + enemies[i].h + 50))) || (jeff.y >= canvas.height - 75)) {
+	    			return true;
 	    		}
 	    	}
 	    }
 
-	    function jump()
-	    {
-	    	var jeff = gameState.jeff;
-	    	isStalling = true;
-
-		    if(isPressing) {
-		    	if(jeff.vy > -maxSpeed) {
-			    	jeff.vy -= 0.1;
-			    	jeff.y += jeff.vy;
-			    }
-			    else {
-			    	jeff.y += jeff.vy;
-			    	isStalling = false;
-			    }
-		    }
-		    else {
-			    while(true) {
-			    	if(jeff.vy < maxSpeed) {
-				    	jeff.vy += 0.1;
-				    	jeff.y += jeff.vy;
-				    }
-				    else {
-				    	isStalling = false;
-				    	break;
-			    	}
-				}
-			}
-	    }
+	    function uselessFunction() {}
 
 	    window.onload = function() 
 	    {
@@ -166,7 +152,6 @@
 	        gameState.trex = createSprite("Trex", canvas.width, canvas.height - 370, -4.0, 0.0);
 
 	        gameState.enemies = [];
-	        maxSpeed = gameState.jeff.vy - 2.2;
 
 	        randomNum = Math.floor(Math.random() * numEnemies);
 
@@ -176,17 +161,14 @@
 		    	while(randomNum < 0.25) {
 		    		randomNum = Math.random();
 		    	}
-		    	if(randomNum < 0.60) {
-		        	var enemy = createSprite("Trex", 5000, canvas.height - 370, -12.0 * randomNum, 0.0);
-		        }
-		        else {
-		        	var enemy = createSprite("Pt", 5000, 300 * randomNum * randomNum, -15.0 * randomNum * randomNum, 0.0);
-		        }
+
+	        	var enemy = createSprite("Trex", 5000, canvas.height - 370, -12.0 * randomNum, 0.0);
+	        	var enemy = createSprite("Pt", 5000, randomNum * randomNum * 400, -15.0 * randomNum * randomNum, 0.0);
+
 		        gameState.enemies.push(enemy);
 		    }
 
 	        window.addEventListener("keydown", onKeyDown);
-	        window.addEventListener("keypress", onKeyPressed);
 	        window.addEventListener("keyup", onKeyUp);
 
 	        animateGame();
