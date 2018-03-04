@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
 
+let timer;
+
 export default class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.handleStartTrack = this.handleStartTrack.bind(this);
+        this.handleStopTrack = this.handleStopTrack.bind(this);
         this.state = {
             stage: '',
             currentMood: '',
@@ -17,7 +20,7 @@ export default class Dashboard extends Component {
 
     handleStartTrack() {
         this.setState({stage: 'tracking', currentMood: 'happy', startTime: Date.now()});
-        setInterval(() => {
+        timer = setInterval(() => {
             var elapsed = parseInt((Date.now() - this.state.startTime)/1000); // elapsed SECONDS
             var fancyTime = "0s";
             if(elapsed >= 60*60) {
@@ -37,6 +40,11 @@ export default class Dashboard extends Component {
         }, 1000);
     }
 
+    handleStopTrack() {
+        clearInterval(timer);
+        this.setState({stage: 'report'});
+    }
+
     render() {
         let dash = <div></div>;
         if(this.state.stage == 'fresh') {
@@ -50,6 +58,12 @@ export default class Dashboard extends Component {
                 <h4 style={{fontWeight: "bold"}}>We think you're feeling {this.state.currentMood} right now.</h4>
                 <h1 style={{fontSize: "300%", textTransform: 'lowercase'}} id="timecode">{this.state.elapsed}</h1>
                 <button className="btn btn-danger" onClick={this.handleStopTrack}>Stop</button>
+            </div>;
+        }
+        else if(this.state.stage == 'report') {
+            dash = <div style={{textAlign: "center"}}>
+                <h4 style={{fontWeight: "bold"}}>Over <span style={{textTransform: "none"}}>{this.state.elapsed}</span>, you mostly felt {this.state.currentMood}.</h4>
+                <button className="btn btn-success" onClick={this.handleStartTrack}>Track</button>
             </div>;
         }
         return (
