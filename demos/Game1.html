@@ -16,6 +16,7 @@
 
     <img id="Jeff" style="display:none;" src="jeff.png"></img>
     <img id="Background" style="display:none;" src="background.jpg"></img>
+    <img id="Background2" style="display:none;" src="background.jpg"></img>
     <img id="Trex" style="display:none;" src="trex.png"></img>
     <img id="Pt" style="display:none;" src="pt.png"></img>
 
@@ -24,8 +25,8 @@
     	var drawing;
     	var gameState;
     	var randomNum;
-    	var stallValue;
-    	var direction = "down";
+    	var maxSpeed;
+    	var isStalling = false;
     	var isPressing = false;
     	var numEnemies = 5;
 
@@ -37,6 +38,7 @@
     		drawing.fillRect(0,0,w,h);
  
         	drawSprite(gameState.background);
+        	drawSprite(gameState.background2);
         	drawSprite(gameState.jeff);
         	drawSprite(gameState.trex);
 
@@ -51,23 +53,28 @@
 
 	       	var jeff = gameState.jeff;
 	       	var background = gameState.background;
+	       	var background2 = gameState.background2;
 	       	var enemies = gameState.enemies;
 
 	       	for(var i = 0; i < numEnemies; i++) {
 	       		enemies[i].x += enemies[i].vx;
 	       	}
-	       	if(!isPressing) {
+	       	if(!isStalling) {
 	       		jeff.y += jeff.vy;
 	       	}
 
 	        background.x += background.vx;
+	        background2.x += background2.vx;
 
 	        while (jeff.y <= -20) {
 	        	jeff.y += 1.0;
 	        }
 
 	        if(background.x < -background.image.width) {
-	        	background.x = 0;
+	        	background.x = background.image.width;
+	        }
+	       if(background2.x < -background2.image.width) {
+	        	background2.x = background2.image.width;
 	        }
 
 	        drawGame();
@@ -93,52 +100,58 @@
 
 	    var onKeyPressed = function(event)
 	    {
-	        if(event.charCode == 32) {
+	        if(event.charCode == 32 || event.keyCode == 32) {
 	        	isPressing = true;
-	        	//direciton = "up";
-	        	jump();
 	        }
+	        jump();
 	    }
 
 	    var onKeyUp = function(event)
 	    {
-	    	isPressing = false;
-
-	    	if(event.charCode == 32) {
-	    		//direction = "down";
+	    	if(isPressing) {
+	    		isPressing = false;
 	        	jump();
 	        }
+	    }
 
-	        stallValue = gameState.jeff.vy;
+	    var onKeyDown = function(event)
+	    {
+	    	if(event.charCode == 32 || event.keyCode == 32) {
+	    		isPressing = true;
+	    		console.log("Test");
+	    		for(var i = 0; i < 20; i++) {
+	    			setTimeout(jump(), 60);
+	    		}
+	    	}
 	    }
 
 	    function jump()
 	    {
 	    	var jeff = gameState.jeff;
-	    	
-			//if(direction == "up") {
-		    	if(stallValue > -gameState.jeff.vy) {
-		    		stallValue -= 0.1;
-		    		jeff.y += stallValue;
-		    	}
-		    	else {
-		    		jeff.y -= jeff.vy;
-		    	}
-		    //}
+	    	isStalling = true;
 
-		   /* else if(direction == "down") {
-		    	console.log("Down");
-		    	while(true) {
-			    	if(stallValue < gameState.jeff.vy) {
-			    		stallValue += 0.1;
-			    		jeff.y += stallValue;
-			    	}
-			    	else {
-			    		jeff.y += jeff.vy;
-			    		break;
-			    	}
+		    if(isPressing) {
+		    	if(jeff.vy > -maxSpeed) {
+			    	jeff.vy -= 0.1;
+			    	jeff.y += jeff.vy;
 			    }
-		    }*/
+			    else {
+			    	jeff.y += jeff.vy;
+			    	isStalling = false;
+			    }
+		    }
+		    else {
+			    while(true) {
+			    	if(jeff.vy < maxSpeed) {
+				    	jeff.vy += 0.1;
+				    	jeff.y += jeff.vy;
+				    }
+				    else {
+				    	isStalling = false;
+				    	break;
+			    	}
+				}
+			}
 	    }
 
 	    window.onload = function() 
@@ -149,10 +162,11 @@
 	        gameState = {};
 	        gameState.jeff = createSprite("Jeff", 300, 200, 0.0, 3.0);
 	        gameState.background = createSprite("Background", 0, 0, -1.0, 0.0);
+	        gameState.background2 = createSprite("Background2", 1920, 0, -1.0, 0.0);
 	        gameState.trex = createSprite("Trex", canvas.width, canvas.height - 370, -4.0, 0.0);
 
 	        gameState.enemies = [];
-	        stallValue = gameState.jeff.vy;
+	        maxSpeed = gameState.jeff.vy - 2.2;
 
 	        randomNum = Math.floor(Math.random() * numEnemies);
 
@@ -171,7 +185,7 @@
 		        gameState.enemies.push(enemy);
 		    }
 
-	        // window.addEventListener("keydown", onKeyDown);
+	        window.addEventListener("keydown", onKeyDown);
 	        window.addEventListener("keypress", onKeyPressed);
 	        window.addEventListener("keyup", onKeyUp);
 

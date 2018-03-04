@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    body { background-color: black; }
+    h1 { color: #FFFFFF; }
+    </style>
+    <title>Game</title>
+</head>
+
+<body>
+    <center>
+        <h1>Game</h1>
+        <canvas id="myCanvas" width="1200" height="600"></canvas>
+    </center>
+
+    <img id="Char" style="display:none;" src="char.png"></img>
+    <img id="Background" style="display:none;" src="g2Background.png"></img>
+    <img id="Block" style="display:none;" src="block.png"></img>
+    <img id="KnightRight" style="display:none;" src="knightRight.png"></img>
+    <img id="KnightLeft" style="display:none;" src="knightLeft.png"></img>
+    <img id="FireBallRight" style="display:none;" src="fireBallRight.png"></img>
+    <img id="FireBallLeft" style="display:none;" src="fireBallLeft.png"></img>
+
+    <script>
+    	var canvas;
+    	var drawing;
+    	var gameState;
+
+    	var isFalling = true;
+    	var forward = false;
+    	var backward = false;
+
+        var drawGame = function() {
+        	var w = canvas.width;
+    		var h = canvas.height;
+
+    		drawing.fillStyle = "#000000";
+    		drawing.fillRect(0,0,w,h);
+ 
+        	drawSprite(gameState.background);
+        	drawSprite(gameState.char);
+        	drawSprite(gameState.block);
+        	drawSprite(gameState.knight);
+        	drawSprite(gameState.fireBall);
+
+        	for(var i = 0; i < gameState.projectiles.length; i++) {
+        		drawSprite(gameState.projectiles[i]);
+        	}
+        }
+
+        var animateGame = function()
+	    {
+	        window.requestAnimationFrame(animateGame);
+	        var char = gameState.char;
+	        var bg = gameState.background;
+	        var knight = gameState.knight;
+	        var block = gameState.block;
+
+	        char.y += char.vy;
+	        knight.x += knight.vx;
+
+	        if(forward) {
+        			gameState.fireBall.x += bg.vx;
+        		}
+        	if(backward) {
+    			gameState.fireBall.x -= bg.vx;
+    		}
+	        gameState.fireBall.x += gameState.fireBall.vx;
+
+	        for(var i = 0; i < gameState.projectiles.length; i++) {
+	        	if(forward) {
+        			gameState.projectiles[i].x += bg.vx;
+        		}
+        		if(backward) {
+        			gameState.projectiles[i].x -= bg.vx;
+        		}
+        		gameState.projectiles[i].x += gameState.projectiles[i].vx;
+
+        	}
+
+	        if(char.y < (canvas.height - char.h - 50)) {
+	        	isFalling = true;
+	        	char.vy += 0.2;
+	        }
+
+	        else if(char.vy > -0.1) {
+	        	char.vy = 0;
+	        	isFalling = false;
+	        }
+
+	        if(forward) {
+	        	bg.x += bg.vx;
+	        	knight.x += bg.vx;
+	        	block.x += bg.vx;
+	        }
+	        else if(backward) {
+	        	bg.x -= bg.vx;
+	        	knight.x -= bg.vx;
+	        	block.x -= bg.vx;
+	        }
+
+	        // Knight tracking movement
+	        if(char.x - 100 > knight.x) {
+	        	knight.vx = 2.0;
+	        	knight.image = document.getElementById("KnightRight");
+	        }
+	        else if(char.x + 100 < knight.x) {
+	        	knight.vx = -2.0;
+	        	knight.image = document.getElementById("KnightLeft");
+	        }
+
+	        if(bg.x < -596) {
+	        	bg.x = 0;
+	        	var fire = createSprite("FireBallLeft", 500, 200, -4.0, 0.0);
+	        	gameState.projectiles.push(fire);
+	        }
+	        else if(bg.x > 0) {
+	        	bg.x = -597;
+	        }
+
+	        if((Math.abs(knight.x - char.x) + 80 < char.w) && ((knight.y - char.y) + 30 < char.h)) {
+	        	
+	        	//if(char.x > knight.x) char.x += 10;
+	        	//else char.x -= 10;
+			    alert("GAME OVER");
+			    document.location.reload();
+	        }
+
+	        drawGame();
+	    }
+
+	    var createSprite = function(imageName, x, y, vx, vy)
+    	{
+	        var sprite = {};
+	        sprite.image = document.getElementById(imageName);
+	        sprite.x = x;
+	        sprite.y = y;
+	        sprite.w = sprite.image.width;
+	        sprite.h = sprite.image.height;
+	        sprite.vx = vx;
+	        sprite.vy = vy;
+	        return sprite;
+   		}
+
+   		var drawSprite = function(sprite)
+	    {
+	        drawing.drawImage(sprite.image, sprite.x, sprite.y, sprite.w, sprite.h);
+	    }
+
+	    var onKeyPressed = function(event)
+	    {
+	        if((event.charCode == 32 || event.keyCode == 32) && !isFalling) {
+	        	jump();
+	        }
+	        if((event.charCode == 37 || event.keyCode == 37) || (event.charCode == 39 || event.keyCode == 39)) {
+	        	if(event.charCode == 0) {
+	        		fire(event.keyCode);
+	        	}
+	        	else {
+	        		fire(event.charCode);
+	        	}
+	        }
+	    }
+
+	    var onKeyDown = function(event)
+	    {
+	    	if(event.charCode == 68 || event.keyCode == 68) {
+	        	forward = true;
+	        }
+	        else if(event.charCode == 65 || event.keyCode == 65) {
+	        	backward = true;
+	        }
+	    }
+
+	    var onKeyUp = function(event)
+	    {
+	    	if(event.charCode == 68 || event.keyCode == 68) {
+	        	forward = false;
+	        }
+	        if(event.charCode == 65 || event.keyCode == 65) {
+	        	backward = false;
+	        }
+	    }
+
+	    function jump()
+	    {
+	    	gameState.char.vy = -10.0;
+	    }
+
+	    function fire(direction)
+	    {
+	    	// Left & right fires
+	    	gameState.fireBall.x = gameState.char.x + 30;
+	    	gameState.fireBall.y = gameState.char.y + 70;
+
+	    	if(direction == 37) {
+	    		gameState.fireBall.image = document.getElementById("FireBallLeft");
+	    		gameState.fireBall.vx = -6.0;
+	    	}
+	    	else if(direction == 39) {
+	    		gameState.fireBall.image = document.getElementById("FireBallRight");
+	    		gameState.fireBall.vx = 6.0;
+	    	}
+	    }
+
+	    window.onload = function() 
+	    {
+	        canvas = document.getElementById("myCanvas");
+	        drawing = canvas.getContext("2d");
+
+	        gameState = {};
+	        gameState.char = createSprite("Char", 300, 100, 0.0, 0.0);
+	        gameState.background = createSprite("Background", 0, 0, -6.0, 0.0);
+	        gameState.block = createSprite("Block", 400, canvas.height - 350, 0.0, 0.0);
+	        gameState.knight = createSprite("KnightLeft", 800, canvas.height - 250, 0.0, 0.0);
+	        gameState.fireBall = createSprite("FireBallLeft", 0, -100, -6.0, 0.0);
+
+	        gameState.projectiles = [];
+
+	        window.addEventListener("keypress", onKeyPressed);
+	        window.addEventListener("keydown", onKeyDown);
+	        window.addEventListener("keyup", onKeyUp);
+
+	        animateGame();
+	    }
+    </script> 
+</body>
+</html>
