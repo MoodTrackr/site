@@ -47,11 +47,27 @@ export default class Dashboard extends Component {
     }
 
     getMostFrequentEmotion() {
-        return _.maxBy(_.keys(
-            {'Angry': this.state.angry, 'Disgust': this.state.disgust, 'Fear': this.state.fear,
-            'Happy': this.state.happy, 'Neutral': this.state.neutral, 'Sad': this.state.sad,
-            'Surprise': this.state.surprise}
-        ), function (o) { return obj[o]; });
+        var arr = [this.state.angry, this.state.disgust, this.state.fear, this.state.happy, this.state.neutral, this.state.sad, this.state.surprise];
+        var max = Math.max(...arr);
+        var i = arr.findIndex(num => {num == max});
+        switch(i) {
+            case 0:
+                return "Angry";
+            case 1:
+                return "Disgust";
+            case 2:
+                return "Fear";
+            case 3:
+                return "Happy";
+            case 4:
+                return "Neutral";
+            case 5:
+                return "Sad";
+            case 6:
+                return "Surprise";
+            default:
+                return "Neutral";
+        }
     }
 
     handleStartTrack() {
@@ -136,7 +152,7 @@ export default class Dashboard extends Component {
         }
         else if(this.state.stage == 'report') {
             dash = <div style={{textAlign: "center"}}>
-                <h4 style={{fontWeight: "bold"}}>Over <span style={{textTransform: "none"}}>{this.state.elapsed}</span>, you mostly felt {this.getMostFrequentEmotion}.</h4>
+                <h4 style={{fontWeight: "bold"}}>Over <span style={{textTransform: "none"}}>{this.state.elapsed}</span>, you mostly felt {this.getMostFrequentEmotion()}.</h4>
                 <div className="container-fluid row">
                     <div className="col-sm-4"></div>
                     <div className="col-sm-4"></div>
