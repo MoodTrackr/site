@@ -9,11 +9,19 @@ export default class Dashboard extends Component {
         super(props);
         this.handleStartTrack = this.handleStartTrack.bind(this);
         this.handleStopTrack = this.handleStopTrack.bind(this);
+        this.generatePieChart = this.generatePieChart.bind(this);
         this.getEmotionInterval = this.getEmotionInterval.bind(this);
         this.state = {
             stage: '',
             currentMood: '',
-            elapsed: '0s'
+            elapsed: '0s',
+            angry: 0,
+            disgust: 0,
+            fear: 0,
+            happy: 0,
+            neutral: 1,
+            sad: 0,
+            surprise: 0
         }
     }
 
@@ -27,10 +35,11 @@ export default class Dashboard extends Component {
             starttime: this.state.startTime,
             endtime: Date.now()
         }, {
-            headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
+            headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
+            timeout: 20000
         }).then((result) => {
-            console.log(result);
-        });
+            this.setState({angry: result.data["Angry"], disgust: result.data["Disgust"], fear: result.data["Fear"], happy: result.data["Happy"], neutral: result.data["Neutral"], sad: result.data["Sad"], surprise: result.data["Surprise"]})
+        }).catch(error => {console.log(error)});
     }
 
     handleStartTrack() {
@@ -67,6 +76,21 @@ export default class Dashboard extends Component {
         this.setState({stage: 'report'});
     }
 
+    generatePieChart() {
+        let state = this.state;
+        return (
+            <PieChart data={[
+                {title: "Angry", value: state.angry, color: "#d9534f"},
+                {title: "Disgust", value: state.disgust, color: "#4BBF73"},
+                {title: "Fear", value: state.fear, color: "#6f42c1"},
+                {title: "Happy", value: state.happy, color: "#f0ad4e"},
+                {title: "Neutral", value: state.neutral, color: "#919aa1"},
+                {title: "Sad", value: state.sad, color: "#007bff"},
+                {title: "Surprise", value: state.surprise, color: "#fd7e14"}
+            ]} expandOnHover/>
+        );
+    }
+
     render() {
         let dash = <div></div>;
         if(this.state.stage == 'fresh') {
@@ -82,13 +106,7 @@ export default class Dashboard extends Component {
                 <div className="container-fluid row" style={{marginTop: 20}}>
                     <div className="col-sm-2"></div>
                     <div className="col-sm-4">
-                        <PieChart data={[
-                            {title: "Data 1", value: 100, color: "#22594e"},
-                            {title: "Data 2", value: 60, color: "#2f7d6d"},
-                            {title: "Data 3", value: 30, color: "#3da18d"},
-                            {title: "Data 4", value: 20, color: "#69c2b0"},
-                            {title: "Data 5", value: 10, color: "#a1d9ce"},
-                        ]} expandOnHover/>
+                        {this.generatePieChart()}
                     </div>
                     <div className="col-sm-4">
                         <h6>Play a game in the meantime!</h6>
@@ -105,13 +123,7 @@ export default class Dashboard extends Component {
                 <div className="container-fluid row">
                     <div className="col-sm-4"></div>
                     <div className="col-sm-4"></div>
-                        <PieChart data={[
-                            {title: "Data 1", value: 100, color: "#22594e"},
-                            {title: "Data 2", value: 60, color: "#2f7d6d"},
-                            {title: "Data 3", value: 30, color: "#3da18d"},
-                            {title: "Data 4", value: 20, color: "#69c2b0"},
-                            {title: "Data 5", value: 10, color: "#a1d9ce"},
-                        ]} expandOnHover/>
+                        {this.generatePieChart()}
                     </div>
                     <div className="col-sm-4"></div>
                 <button className="btn btn-success" onClick={this.handleStartTrack}>Track</button>

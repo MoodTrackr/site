@@ -6,6 +6,7 @@ import Signup from './components/SignUp';
 import Dashboard from './components/Dashboard';
 
 var video;
+var videoStream;
 var img = new Image(48, 48);
 var canvas;
 var camInterval;
@@ -59,6 +60,9 @@ class App extends React.Component {
 
     stopFilming() {
         clearInterval(camInterval);
+        video.pause();
+        video.srcObject = null;
+        videoStream.getTracks().forEach(function (track) { track.stop() })
     }
 
     toggleModule(newModule) {
@@ -89,6 +93,7 @@ window.onload = function() {
 // IF WE HAVE WEBCAM PERMISSIONS, KICK OFF TRACKING
 function handleSuccess(stream) {
     video.srcObject = stream;
+    videoStream = stream;
     camInterval = setInterval(sendSnapshot, 3000);
 }
 
@@ -110,7 +115,7 @@ function sendSnapshot() {
         {headers:
             { 'content-type': 'application/json' }
         }
-    ).then((res) => {console.log(res);});
+    ).then((res) => {console.log(res);}).catch(error => {console.log(error)});
 }
 
 // CONVERT IMAGE TO GRAYSCALE
