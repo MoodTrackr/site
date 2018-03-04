@@ -9,8 +9,7 @@
     "start": "npm run webpack && npm run server"
   },
   "proxy": {
-    "host": "18.219.163.179",
-    "port": 8080
+    "host": "18.219.163.179:8080"
   },
   "repository": {
     "type": "git",
@@ -28,6 +27,8 @@
     "babel-loader": "^7.1.3",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "tunnel": "0.0.5",

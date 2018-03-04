@@ -85,10 +85,7 @@ function sendSnapshot() {
     canvas.getContext('2d').drawImage(video, 0, 0);
     img.src = canvas.toDataURL('image/webp;base64');
     img.src = grayscale();
-    // post('https://localhost:8080', img, {headers: { 'content-type': 'image/webp;base64' }});
-    // console.log({
-    //     image: canvas.toDataURL()
-    // })
+//    post('https://localhost:8080', img, {headers: { 'content-type': 'image/webp;base64' }});
     document.body.appendChild(img);
 }
 

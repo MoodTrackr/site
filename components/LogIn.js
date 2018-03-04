@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-// import axios, {post} from 'axios';
-// import tunnel from 'tunnel';
+import axios, {post} from 'axios';
+import https from 'https';
 
 let usernameField, passwordField;
 
@@ -23,56 +23,19 @@ export default class Login extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-
-        var tunnelingAgent = tunnel.httpOverHttps({
-            // maxSockets: poolSize, // Defaults to http.Agent.defaultMaxSockets
-
-            proxy: { // Proxy settings
-                // host: proxyHost, // Defaults to 'localhost'
-                port: 8080, // Defaults to 443
-                // localAddress: localAddress, // Local interface if necessary
-
-                // Header fields for proxy server if necessary
-                headers: {
-                  'User-Agent': 'Node'
-                },
-            }
+        const agent = new https.Agent({
+            rejectUnauthorized: false
         });
-
-        // var req = http.request({
-        //     host: '18.219.163.179',
-        //     path: '/login',
-        //     port: 8080,
-        //     agent: tunnelingAgent
-        // }, (res) => {
-        //     res.on('data', (data) => {console.log(data);});
-        // });
-        // const loginRequest = axios({
-        //     method: 'post',
-        //     url: '/login',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     data: {
-        //         username: usernameField.value,
-        //         password: passwordField.value
-        //     },
-	    // proxy: {
-		// host: 'http://18.219.163.179',
-		// port: 8080
-	    // },
-	    // baseURL: 'http://18.219.163.179:8080'
-        // }).then(result => {console.log(result)}).catch(error => {console.log(error)});
-
-	/*axios.post('/login', {
-		username: usernameField.value,
-		password: passwordField.value
-	})
-	.then(function(response) {
-		console.log(response);
-	})
-	.catch(function(error) {
-		console.log(error);
-	});*/
-    }
+        const instance = axios.create({
+            httpsAgent: agent
+        })
+        instance.post("https://18.219.163.179:8080/login", {
+            username: usernameField.value,
+            password: passwordField.value
+        }, {
+            headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
+        });
+   }
 
     render() {
         return (
