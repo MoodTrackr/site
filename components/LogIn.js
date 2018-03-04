@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {post} from 'axios';
+import axios, {post} from 'axios';
 
 let usernameField, passwordField;
 
@@ -16,7 +16,15 @@ export default class Login extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        const loginRequest = post('http://localhost:8080', {username: usernameField.value, password: passwordField.value}, {headers: { 'Content-Type': 'application/json' }});
+        const loginRequest = axios({
+            method: 'post',
+            url: 'http://localhost:8080',
+            headers: { 'Content-Type': 'application/json' },
+            data: {
+                username: usernameField.value,
+                password: passwordField.value
+            }
+        });
         loginRequest.then(result => {console.log(result)}).catch(error => {console.log(error)});
     }
 
