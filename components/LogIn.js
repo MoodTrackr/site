@@ -16,7 +16,7 @@ export default class Login extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        const loginRequest = post('http://localhost:8080', {username: usernameField.value, password: passwordField.value}, {headers: { 'content-type': 'application/json' }});
+        const loginRequest = post('http://localhost:8080', {username: usernameField.value, password: passwordField.value}, {headers: { 'Content-Type': 'application/json' }});
         loginRequest.then(result => {console.log(result)}).catch(error => {console.log(error)});
     }
 
