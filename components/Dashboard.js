@@ -21,6 +21,7 @@ export default class Dashboard extends Component {
 
     handleStartTrack() {
         this.setState({stage: 'tracking', currentMood: 'happy', startTime: Date.now()});
+        this.props.start();
         timer = setInterval(() => {
             var elapsed = parseInt((Date.now() - this.state.startTime)/1000); // elapsed SECONDS
             var fancyTime = "0s";
@@ -42,6 +43,7 @@ export default class Dashboard extends Component {
     }
 
     handleStopTrack() {
+        this.props.stop();
         clearInterval(timer);
         this.setState({stage: 'report'});
     }

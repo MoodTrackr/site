@@ -8,14 +8,19 @@ import Dashboard from './components/Dashboard';
 var video;
 var img = new Image(48, 48);
 var canvas;
+var camInterval;
 
 // REACTDOM THINGS
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.toggleModule = this.toggleModule.bind(this);
+        this.authenticate = this.authenticate.bind(this);
+        this.startFilming = this.startFilming.bind(this);
+        this.stopFilming = this.stopFilming.bind(this);
         this.state = {
-            module: ''
+            module: '',
+            hasAuth: false
         }
     }
 
@@ -24,6 +29,7 @@ class App extends React.Component {
             this.toggleModule('login');
         }
         else {
+            this.setState({hasAuth: true})
             this.toggleModule('dash');
         }
     }
@@ -32,20 +38,37 @@ class App extends React.Component {
         let mod = <div></div>;
 
         if(this.state.module == 'login') {
-            mod = <Login toggle={this.toggleModule}/>;
+            mod = <Login toggle={this.toggleModule} authenticate={this.authenticate}/>;
         }
         else if(this.state.module == 'signup') {
             mod = <Signup toggle={this.toggleModule}/>;
         }
-        else if(this.state.module == 'dash') {
-            mod = <Dashboard/>;
+        else if(this.state.module == 'dash' || this.state.hasAuth) {
+            mod = <Dashboard start={this.startFilming} stop={this.stopFilming}/>;
         }
 
         return mod;
     }
 
+    startFilming() {
+        const constraints = {
+            video: { width: 48, height: 48 }
+        };
+        navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+    }
+
+    stopFilming() {
+        clearInterval(camInterval);
+    }
+
     toggleModule(newModule) {
         this.setState({module: newModule});
+    }
+
+    authenticate(cookie, name) {
+        makeCookie('auth', cookie);
+        makeCookie('username', name)
+        this.setState({hasAuth: true})
     }
 };
 
@@ -55,24 +78,18 @@ ReactDOM.render(<App/>, document.getElementById('app'));
 
 // TRACKER THINGS
 window.onload = function() {
-    const constraints = {
-        video: { width: 48, height: 48 }
-    };
-
-    makeCookie('auth', '123');
-    makeCookie('username', 'Ben');
-
     video = document.querySelector('video');
     canvas = document.createElement('canvas');
     canvas.width = 48;
     canvas.height = 48;
-    navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+    canvas.style.display = "none";
+
 }
 
 // IF WE HAVE WEBCAM PERMISSIONS, KICK OFF TRACKING
 function handleSuccess(stream) {
     video.srcObject = stream;
-    setInterval(sendSnapshot, 1000);
+    camInterval = setInterval(sendSnapshot, 1000);
 }
 
 // LOG PERMISSIONS ERROR
@@ -85,8 +102,15 @@ function sendSnapshot() {
     canvas.getContext('2d').drawImage(video, 0, 0);
     img.src = canvas.toDataURL('image/webp;base64');
     img.src = grayscale();
-//    post('https://localhost:8080', img, {headers: { 'content-type': 'image/webp;base64' }});
-    document.body.appendChild(img);
+    post('https://18.219.163.179:8080/upload',
+        {
+            cookie: readCookie('auth'),
+            image: img.src
+        },
+        {headers:
+            { 'content-type': 'application/json' }
+        }
+    ).then((res) => {console.log(res);});
 }
 
 // CONVERT IMAGE TO GRAYSCALE
