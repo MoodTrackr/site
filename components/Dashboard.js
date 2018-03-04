@@ -13,6 +13,7 @@ export default class Dashboard extends Component {
         this.generatePieChart = this.generatePieChart.bind(this);
         this.getEmotionInterval = this.getEmotionInterval.bind(this);
         this.getMostFrequentEmotion = this.getMostFrequentEmotion.bind(this);
+        this.goToGame1 = this.goToGame1.bind(this);
         this.state = {
             stage: '',
             currentMood: '',
@@ -87,6 +88,10 @@ export default class Dashboard extends Component {
         this.setState({stage: 'report'});
     }
 
+    goToGame1() {
+        this.props.toggle('game1');
+    }
+
     generatePieChart() {
         let state = this.state;
         return (
@@ -121,7 +126,8 @@ export default class Dashboard extends Component {
                     </div>
                     <div className="col-sm-4">
                         <h6>Play a game in the meantime!</h6>
-
+                        <a href="../demos/Game1.html" target="_blank"><img src="../demos/jeff.png"/></a>
+                        <a href="../demos/Game2.html" target="_blank"><img src="../demos/boss.png" style={{width: "30%"}}/></a>
                     </div>
                     <div className="col-sm-2"></div>
                 </div>

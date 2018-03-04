@@ -4,6 +4,7 @@ import {post} from 'axios';
 import Login from './components/LogIn';
 import Signup from './components/SignUp';
 import Dashboard from './components/Dashboard';
+import Game1 from './components/Game1';
 
 var video;
 var videoStream;
@@ -51,7 +52,10 @@ class App extends React.Component {
             mod = <Signup toggle={this.toggleModule}/>;
         }
         else if(this.state.module == 'dash' || this.state.hasAuth) {
-            mod = <Dashboard start={this.startFilming} stop={this.stopFilming} current={this.state.currentEmotion}/>;
+            mod = <Dashboard start={this.startFilming} stop={this.stopFilming} current={this.state.currentEmotion} toggle={this.toggleModule}/>;
+        }
+        else if(this.state.module == 'game1') {
+            mod = <Game1/>;
         }
 
         return mod;
@@ -105,7 +109,7 @@ class App extends React.Component {
             },
             {
                 headers: { 'content-type': 'application/json' },
-                timeout: 3000
+                timeout: 20000
             }
         ).then((res) => {
             console.log(res);
