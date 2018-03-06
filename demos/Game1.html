@@ -5,12 +5,12 @@
     body { background-color: black; }
     h1 { color: #FFFFFF; }
     </style>
-    <title>Game</title>
+    <title>Jurassic Stunt Plane</title>
 </head>
 
 <body>
     <center>
-        <h1>Game</h1>
+        <h1>Jurassic Stunt Plane</h1>
         <canvas id="myCanvas" width="1600" height="600"></canvas>
     </center>
 
@@ -56,8 +56,28 @@
 	       	var background2 = gameState.background2;
 	       	var enemies = gameState.enemies;
 
-	       	for(var i = 0; i < numEnemies; i++) {
+	       	if(enemies.length < numEnemies) {
+		       	for (var i=0; i < numEnemies - enemies.length; i++)
+			    {
+			    	randomNum = 0.0;
+			    	while(randomNum < 0.25) {
+			    		randomNum = Math.random();
+			    	}
+
+		        	var enemy = createSprite("Trex", 12000 * randomNum -1000, canvas.height - 370 - randomNum * 30, -10.0 * randomNum, 0.0);
+		        	gameState.enemies.push(enemy);
+
+		        	var enemy = createSprite("Pt", 5000, randomNum * 300, -15.0 * randomNum * randomNum, 0.0);
+		        	gameState.enemies.push(enemy);
+			    }
+			}
+
+	       	for(var i = 0; i < enemies.length; i++) {
 	       		enemies[i].x += enemies[i].vx;
+
+	       		if(enemies[i].x <= -1000) {
+	       			enemies.splice(i, 1);
+	       		}
 	       	}
 
 	       	if(isPressing && jeff.vy > -2.0) {
@@ -132,9 +152,21 @@
 	    	var enemies = gameState.enemies;
 
 	    	for(var i = 0; i < enemies.length; i++) {
-	    		if(((jeff.x + jeff.w - 50 >= enemies[i].x && jeff.x <= enemies[i].x + enemies[i].w)  && ((jeff.y + jeff.h - 100 >= enemies[i].y) || (jeff.y >= enemies[i].y + enemies[i].h + 50))) || (jeff.y >= canvas.height - 75)) {
-	    			return true;
-	    		}
+	    		console.log(enemies[i].image);
+	    		if(enemies[i].w < 400) {
+		    		if(((jeff.x + jeff.w - 120 >= enemies[i].x && jeff.x <= enemies[i].x + enemies[i].w - 120)  && 
+		    		   ((jeff.y + jeff.h - 80 >= enemies[i].y) && (jeff.y + 80 <= enemies[i].y + enemies[i].h))) || 
+		    			(jeff.y >= canvas.height - 75)) {
+		    			return true;
+		    		}
+		    	}
+		    	else {
+		    		if(((jeff.x + jeff.w - 200 >= enemies[i].x && jeff.x <= enemies[i].x + enemies[i].w - 260)  && 
+		    		   (jeff.y + jeff.h - 100 >= enemies[i].y)) || 
+		    			(jeff.y >= canvas.height - 75)) {
+		    			return true;
+		    		}
+		    	}
 	    	}
 	    }
 
@@ -154,19 +186,6 @@
 	        gameState.enemies = [];
 
 	        randomNum = Math.floor(Math.random() * numEnemies);
-
-	        for (var i=0; i< numEnemies; i++)
-		    {
-		    	randomNum = 0.0;
-		    	while(randomNum < 0.25) {
-		    		randomNum = Math.random();
-		    	}
-
-	        	var enemy = createSprite("Trex", 5000, canvas.height - 370, -12.0 * randomNum, 0.0);
-	        	var enemy = createSprite("Pt", 5000, randomNum * randomNum * 400, -15.0 * randomNum * randomNum, 0.0);
-
-		        gameState.enemies.push(enemy);
-		    }
 
 	        window.addEventListener("keydown", onKeyDown);
 	        window.addEventListener("keyup", onKeyUp);

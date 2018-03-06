@@ -5,12 +5,12 @@
     body { background-color: black; }
     h1 { color: #FFFFFF; }
     </style>
-    <title>Game</title>
+    <title>His Name is Jeff</title>
 </head>
 
 <body>
     <center>
-        <h1>Game</h1>
+        <h1>His Name is Jeff</h1>
         <canvas id="myCanvas" width="1200" height="600"></canvas>
     </center>
 
@@ -35,6 +35,9 @@
     	var maxShots = 5;
     	var stage = 1;
     	var playerHP = 5;
+    	var bossHP = 30;
+    	var colEnemy;
+    	var canMove = true;
 
         var drawGame = function() {
         	var w = canvas.width;
@@ -75,7 +78,7 @@
 	        	if(forward) {
         			gameState.projectiles[i].x -= 6.0;
         		}
-        		if(backward) {
+        		if(backward && bg.x < 200) {
         			gameState.projectiles[i].x += 6.0;
         		}
         		gameState.projectiles[i].x += gameState.projectiles[i].vx;
@@ -83,10 +86,10 @@
 
         	for(var i = 0; i < gameState.shots.length; i++) {
 	        	if(forward) {
-        			gameState.shots[i].x -= 6.0;
+        			gameState.shots[i].x -= 8.0;
         		}
-        		if(backward) {
-        			gameState.shots[i].x += 6.0;
+        		else if(backward && bg.x < 200) {
+        			gameState.shots[i].x += 8.0;
         		}
         		gameState.shots[i].x += gameState.shots[i].vx;
 
@@ -97,9 +100,22 @@
 
         		for(var j = 0; j < enemies.length; j++) {
         			if(gameState.shots[i].x >= enemies[j].x && gameState.shots[i].x <= enemies[j].x + enemies[j].w && gameState.shots[i].y > 400) {
-        				gameState.enemies.splice(j, 1);
+        				gameState.enemies[j].hp --;
+        				if(gameState.enemies[j].hp <= 0) {
+        					gameState.enemies.splice(j, 1);
+        				}
         				gameState.shots.splice(i, 1);
         				break;
+        			}
+        		}
+
+        		if(gameState.shots[i].x >= boss.x && gameState.shots[i].x <= boss.x + boss.w && gameState.shots[i].y > 250) {
+        			gameState.shots.splice(i, 1);
+        			bossHP--;
+
+        			if(bossHP <= 0) {
+        				boss.x += 7000;
+        				bossHP = 30;
         			}
         		}
         	}
@@ -108,48 +124,44 @@
 	        	if(forward) {
         			enemies[i].x -= 6.0;
         		}
-        		if(backward) {
+        		else if(backward && bg.x < 200) {
         			enemies[i].x += 6.0;
         		}
         		
         		// Knight tracking movement
-		        if(char.x - 100 > enemies[i].x) {
+		        if(char.x - 100 < enemies[i].x) {
 		        	if(enemies[i].vx > -2.0) {
 		        		enemies[i].vx -= 0.2;
-			        	enemies[i].image = document.getElementById("KnightRight");
+			        	enemies[i].image = document.getElementById("KnightLeft");
 		        	}
 		        }
-		        else if(char.x + 50 < enemies[i].x) {
-		        	if(enemies[i].vx < -2.0) {
+		        else if(char.x + 50 > enemies[i].x) {
+		        	if(enemies[i].vx <= 2.0) {
 		        		enemies[i].vx += 0.2;
-		        		enemies[i].image = document.getElementById("KnightLeft");
+		        		enemies[i].image = document.getElementById("KnightRight");
 		        	}
 		        }
 		       	enemies[i].x += enemies[i].vx;
         	}
 
-        	if(boss.vx > 0.0) {
-	        	boss.vx -= 0.05;
-	        	block.vx -= 0.05;
-	        }
-
-	        if(bg.vx < -0.0) {
-	        	bg.vx += 0.05;
-	        	bg.x -= bg.vx;
-	        }
-
-	        else if(!isFalling) {
-	        	char.image = document.getElementById("Char");
-	        }
-
+	        // Falling
 	        if(char.y < (canvas.height - char.h - 50)) {
 	        	isFalling = true;
 	        	char.vy += 0.2;
 	        }
 
-	        else if(char.vy > -0.1) {
+	        // Landing
+	        else if(isFalling && char.y >= canvas.height - char.h - 50) {
 	        	char.vy = 0;
 	        	isFalling = false;
+	        	if(!canMove) {
+	        		forward = false;
+	        		backward = false;
+	        	}
+	        }
+	        else if(!isFalling) {
+	        	char.image = document.getElementById("Char");
+	        	canMove = true;
 	        }
 
 	        if(forward) {
@@ -157,10 +169,10 @@
 	        	block.x -= 6.0;
 	        	boss.x -= 6.0;
 	        }
-	        else if(backward) {
-	        	bg.x += 6.0;
-	        	block.x += 6.0;
-	        	boss.x += 6.0
+	        else if(backward && bg.x < 200) {
+		        bg.x += 6.0;
+		        block.x += 6.0;
+		        boss.x += 6.0
 	        }
 
 	        if(char.x > boss.x - 400 - char.w) {
@@ -183,8 +195,8 @@
 	        	bg.x = 0;
 	        	stage++;
 	        	if(stage % 2 == 0) {
-	        		for(var i = 0; i < stage / 2; i++) {
-		        		var knight = createSprite("KnightLeft", 2000 + 300 * i, 375, -3.0, 0.0);
+	        		for(var i = 0; i < Math.random() * 5; i++) {
+		        		var knight = createSprite("KnightLeft", 2000 + 300 * i, 375, -3.0, 0.0, 5);
 			        	gameState.enemies.push(knight);
 			        }
 		        }
@@ -192,20 +204,25 @@
 	        	gameState.projectiles.push(fireBall);
 	        }
 	        else if(bg.x > 0 && stage > 1) {
-	        	bg.x = -597;
+	        	bg.x = -594;
 	        	stage--;
 	        }
-            /*if(stage >= 2) {
+            
+            /*if(stage == 2) {
         		if(gameState.trap.y < canvas.height - gameState.trap.h - 30) {
 	        		gameState.trap.y += gameState.trap.vy;
+	        		gameState.trap.x += gameState.trap.vx;
+	        	}
+	        	else {
+					gameState.trap.y = 1000;
 	        	}
         	}
 
         	gameState.trap.vx += -4.0;*/
 
-	        if(isColliding() || (Math.abs(boss.x - char.x) + 80 < char.w) && ((boss.y - char.y) + 30 < char.h)) {
+	        if(isColliding() || ((Math.abs(boss.x - char.x) < char.w || (Math.abs(boss.x - char.x) < boss.w) && char.x > boss.x)) && ((boss.y - char.y) + 30 < char.h)) {
 	        	
-			    playerHP -= 1;
+			   playerHP -= 1;
 			    jump();
 			    kick();
 
@@ -218,7 +235,7 @@
 	        drawGame();
 	    }
 
-	    var createSprite = function(imageName, x, y, vx, vy)
+	    var createSprite = function(imageName, x, y, vx, vy, hp)
     	{
 	        var sprite = {};
 	        sprite.image = document.getElementById(imageName);
@@ -228,6 +245,7 @@
 	        sprite.h = sprite.image.height;
 	        sprite.vx = vx;
 	        sprite.vy = vy;
+	        sprite.hp = hp;
 	        return sprite;
    		}
 
@@ -253,22 +271,20 @@
 
 	    var onKeyDown = function(event)
 	    {
-	    	if(event.charCode == 68 || event.keyCode == 68) {
+	    	if(event.charCode == 68 || event.keyCode == 68 && canMove) {
 	        	forward = true;
 	        }
-	        else if(event.charCode == 65 || event.keyCode == 65) {
-	        	if(!((stage == 1) && (gameState.background.x >= 100))) {
-	        		backward = true;
-	        	}
+	        else if(event.charCode == 65 || event.keyCode == 65 && canMove) {
+	        	backward = true;
 	        }
 	    }
 
 	    var onKeyUp = function(event)
 	    {
-	    	if(event.charCode == 68 || event.keyCode == 68) {
+	    	if(event.charCode == 68 || event.keyCode == 68 && canMove) {
 	        	forward = false;
 	        }
-	        if(event.charCode == 65 || event.keyCode == 65) {
+	        if(event.charCode == 65 || event.keyCode == 65 && canMove) {
 	        	backward = false;
 	        }
 	    }
@@ -280,25 +296,25 @@
 
 	    function kick()
 	    {
-	    	gameState.background.vx += -12.0;
-	       	gameState.block.vx += -8.0;
-	        gameState.boss.vx += -8.0;
-	        for(var i = 0; i < gameState.enemies.length; i++) {
-	        	gameState.enemies[i].x += 10;
-	        	gameState.enemies[i].vx += 8.0;
+	    	if(colEnemy.x > gameState.char.x) {
+	        	backward = true;
+	        } else {
+	        	forward = true;
 	        }
 	        gameState.char.image = document.getElementById("CharHurt");
+	        isFalling = true;
+	        canMove = false;
 	    }
 
 	    function fire(direction)
 	    {
 	    	// Left & right fires
 	    	if(direction == 37) {
-	    		var fire = createSprite("FireBallLeft", gameState.char.x + 30, gameState.char.y + 70, -8.0, 0.0);
+	    		var fire = createSprite("FireBallLeft", gameState.char.x + 30, gameState.char.y + 70, -12.0, 0.0);
 	        	gameState.shots.push(fire);
 	    	}
 	    	else if(direction == 39) {
-	    		var fire = createSprite("FireBallRight", gameState.char.x + 30, gameState.char.y + 70, 8.0, 0.0);
+	    		var fire = createSprite("FireBallRight", gameState.char.x + 30, gameState.char.y + 70, 12.0, 0.0);
 	        	gameState.shots.push(fire);
 	    	}
 	    }
@@ -310,6 +326,7 @@
 
 	    	for(var i = 0; i < enemies.length; i++) {
 	    		if(Math.abs(enemies[i].x - char.x) < char.w && char.y >= enemies[i].y - char.h + 50) {
+	    			colEnemy = enemies[i];
 	    			return true;
 	    		}
 	    	}
@@ -322,11 +339,11 @@
 
 	        gameState = {};
 	        gameState.char = createSprite("Char", 300, 100, 0.0, 0.0);
-	        gameState.background = createSprite("Background", 0, 0, 0.0, 0.0);
+	        gameState.background = createSprite("Background", -300, 0, 0.0, 0.0);
 	        gameState.block = createSprite("Block", 400, canvas.height - 350, 0.0, 0.0);
 	        gameState.fireBall = createSprite("FireBallLeft", 0, -100, -6.0, 0.0);
 	        gameState.boss = createSprite("Boss", 5000, canvas.height - 350, 0.0, 0.0);
-	        //gameState.trap = createSprite("KnightLeft", 500, -300, -2.0, 8.0);
+	        //gameState.trap = createSprite("KnightLeft", 500, -300, 0.1, 8.0);
 
 	        gameState.projectiles = [];
 	        gameState.shots = [];
