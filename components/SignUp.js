@@ -29,7 +29,7 @@ export default class Signup extends Component {
     handleSubmit(event) {
         event.preventDefault();
         if(passwordField1.value == passwordField2.value) {
-            post("https://18.219.163.179:8080/register", {
+            post("https://moodtrackr.com:8080/register", {
                 username: usernameField.value,
                 password: passwordField1.value
             }, {

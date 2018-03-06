@@ -29,7 +29,7 @@ export default class Login extends Component {
         const instance = axios.create({
             httpsAgent: agent
         })
-        instance.post("https://18.219.163.179:8080/login", {
+        instance.post("https://moodtrackr.com:8080/login", {
             username: usernameField.value,
             password: passwordField.value
         }, {

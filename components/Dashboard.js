@@ -33,7 +33,7 @@ export default class Dashboard extends Component {
     }
 
     getEmotionInterval() {
-        post("https://18.219.163.179:8080/history", {
+        post("https://moodtrackr.com:8080/history", {
             cookie: readCookie('auth'),
             starttime: this.state.startTime,
             endtime: Date.now()

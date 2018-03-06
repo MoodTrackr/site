@@ -104,7 +104,7 @@ class App extends React.Component {
         canvas.getContext('2d').drawImage(video, 0, 0);
         img.src = canvas.toDataURL('image/webp;base64');
         img.src = this.grayscale();
-        post('https://18.219.163.179:8080/upload',
+        post('https://moodtrackr.com:8080/upload',
             {
                 cookie: readCookie('auth'),
                 image: img.src
